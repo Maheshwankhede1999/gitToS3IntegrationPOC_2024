@@ -9,12 +9,38 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: jakejarvis/s3-sync-action@v0.5.1
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install AWS CLI
+        run: |
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          sudo ./aws/install
+
+      - name: Copy existing S3 files with 'backup' suffix and current date
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_SOURCE_PATH: ${{ secrets.AWS_SOURCE_PATH }}
+          AWS_DEST_PATH: ${{ secrets.AWS_DEST_PATH }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          BUCKET=${{ secrets.AWS_S3_BUCKET }}
+          SOURCE_PATH=${{ secrets.AWS_SOURCE_PATH }}
+          DEST_PATH=${{ secrets.AWS_DEST_PATH }}
+          DATE=$(date +'%d%m%Y')
+          aws s3 ls s3://$BUCKET/$SOURCE_PATH/ --recursive | awk '{print $4}' | while read FILE; do
+            BASENAME=$(basename $FILE)
+            DIRNAME=$(dirname $FILE)
+            aws s3 cp s3://$BUCKET/$FILE s3://$BUCKET/$DEST_PATH/$DIRNAME/${BASENAME}_backup_$DATE
+          done
+
+      - name: Sync new content to S3
+        uses: jakejarvis/s3-sync-action@v0.5.1
         with:
-          args: --acl public-read --follow-symlinks --delete --exclude '.git*/*'
+          args: --acl public-read --follow-symlinks --delete --exclude '.git*/*' ./ bitbucket/gitToS3IntegrationPOC_2024/
         env:
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          DEST_DIR: 'bitbucket/gitToS3IntegrationPOC_2024/'  # Add the desired destination directory here
