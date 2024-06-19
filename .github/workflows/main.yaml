@@ -21,9 +21,9 @@ jobs:
 
       - name: Backup existing S3 files with 'backup' suffix and current date
         env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-          AWS_SOURCE_PATH: ${{ secrets.AWS_SOURCE_PATH }}
-          AWS_DEST_PATH: ${{ secrets.AWS_DEST_PATH }}
+          AWS_S3_BUCKET: "githubnew6666666565444"
+          AWS_SOURCE_PATH: "bitbucket/gitToS3IntegrationPOC_2024"
+          AWS_DEST_PATH: "bitbucket_backup"
           BASE_FOLDER_NAME: "gitToS3IntegrationPOC_2024"
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
