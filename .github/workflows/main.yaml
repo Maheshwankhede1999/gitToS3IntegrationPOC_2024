@@ -33,5 +33,6 @@ jobs:
           aws s3 ls s3://${{ env.AWS_S3_BUCKET }}/${{ env.AWS_SOURCE_PATH }}/ --recursive | awk '{print $4}' | while read FILE; do
             BASENAME=$(basename $FILE)
             RELATIVE_PATH=${FILE#${{ secrets.AWS_SOURCE_PATH }}/}
+            echo "Processing file: $BASENAME"
             aws s3 cp s3://${{ env.AWS_S3_BUCKET }}/${FILE} s3://${{ env.AWS_S3_BUCKET }}/${{ secrets.AWS_DEST_PATH }}/${BACKUP_FOLDER_NAME}/${RELATIVE_PATH}
           done
