@@ -24,11 +24,12 @@ jobs:
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
           AWS_SOURCE_PATH: ${{ secrets.AWS_SOURCE_PATH }}
           AWS_DEST_PATH: ${{ secrets.AWS_DEST_PATH }}
+          BASE_FOLDER_NAME: "gitToS3IntegrationPOC_2024"
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
           DATE=$(date +'%d%m%Y')
-          BACKUP_FOLDER_NAME=$(basename ${{ secrets.AWS_SOURCE_PATH }})_backup_$DATE
+          BACKUP_FOLDER_NAME=${BASE_FOLDER_NAME}_backup_$DATE
           aws s3 ls s3://${{ env.AWS_S3_BUCKET }}/${{ env.AWS_SOURCE_PATH }}/ --recursive | awk '{print $4}' | while read FILE; do
             BASENAME=$(basename $FILE)
             RELATIVE_PATH=${FILE#${{ secrets.AWS_SOURCE_PATH }}/}
