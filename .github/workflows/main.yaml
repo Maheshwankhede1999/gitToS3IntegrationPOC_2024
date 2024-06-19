@@ -34,15 +34,3 @@ jobs:
             RELATIVE_PATH=${FILE#${{ secrets.AWS_SOURCE_PATH }}/}
             aws s3 cp s3://${{ env.AWS_S3_BUCKET }}/${FILE} s3://${{ env.AWS_S3_BUCKET }}/${{ secrets.AWS_DEST_PATH }}/${BACKUP_FOLDER_NAME}/${RELATIVE_PATH}
           done
-
-
-      - name: Sync new content to S3
-        uses: jakejarvis/s3-sync-action@v0.5.1
-        with:
-          source_dir: './'
-          destination_dir: 'bitbucket/gitToS3IntegrationPOC_2024/'
-          args: --acl public-read --follow-symlinks --delete --exclude '.git*/*'
-        env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
